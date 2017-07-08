@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>FaceCap</title>
+  <link rel="stylesheet" href="tracking.js-master/tracking.js-master/examples/assets/demo.css">
+
+  <script src="tracking.js-master/tracking.js-master/build/tracking-min.js"></script>
+  <script src="tracking.js-master/tracking.js-master/build/data/face-min.js"></script>
+  <script src="tracking.js-master/tracking.js-master/build/data/eye-min.js"></script>
+  <script src="tracking.js-master/tracking.js-master/build/data/mouth-min.js"></script>
+   <script src="../node_modules/dat.gui/build/dat.gui.min.js"></script>
+  <script src="tracking.js-master/tracking.js-master/examples/assets/stats.min.js"></script>
+
+  <style>
+  video, canvas {
+    margin-left: 230px;
+    margin-top: 120px;
+    position: absolute;
+  }
+  </style>
+</head>
+<body>
+  
+
+  <div class="demo-frame">
+    <div class="demo-container">
+      <video id="video" width="320" height="240" preload autoplay loop muted></video>
+      <canvas id="canvas" width="320" height="240"></canvas>
+	  <div style="text-align:center">
+	  <button class="button" onclick="none()">No Filters</button>
+	  <button class="button" onclick="dog()">DOG</button>
+	  <button class="button" onclick="cat()">CAT</button>
+	  <button class="button" onclick="rabbit()">RABBIT</button>
+	  <button class="button" onclick="devil()">DEVIL</button>
+	  <style type "text/css">
+	  .button{
+	  background-color: black;
+	  cursor:pointer;
+	  align:center;
+	  position: relative;
+	  top: 50px;
+	  width:100px;
+	  height: 40px;
+	  color:#ffffff;
+	  border:none;
+	  font-size:100%;}
+	  .button:focus
+	  {
+	  border:2px solid blue;}
+	  </style>
+	  </div>
+    </div>
+  </div>
+
+  <script>
+  var img=document.createElement("img");
+  img.src='';
+  function none()
+  {
+  img.src='';
+  }
+  function dog()
+  {
+  img.src='filters/dog.png';
+  }
+  function cat()
+  {
+  img.src='filters/cat.png';
+  }
+  function rabbit()
+  {
+  img.src='filters/rabbit.png';
+  }
+  function devil()
+  {
+  img.src='filters/devil.png';
+  }
+    window.onload = function() {
+      var video = document.getElementById('video');
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+      var tracker = new tracking.ObjectTracker(['face']);
+      tracker.setInitialScale(4);
+      tracker.setStepSize(2);
+      tracker.setEdgesDensity(0.1);
+      tracking.track('#video', tracker, { camera: true });
+      tracker.on('track', function(event) {
+	  
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        event.data.forEach(function(rect) {
+          context.drawImage(img,rect.x,rect.y-40,rect.width+9,rect.height*1.5);
+        });
+      });
+      var gui = new dat.GUI();
+      gui.add(tracker, 'edgesDensity', 0.1, 0.5).step(0.01);
+      gui.add(tracker, 'initialScale', 1.0, 10.0).step(0.1);
+      gui.add(tracker, 'stepSize', 1, 5).step(0.1);
+    };
+  </script>
+
+</body>
+</html>
